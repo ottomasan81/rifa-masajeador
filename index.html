@@ -1,33 +1,94 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tablero Rifa Masajeador</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tablero Rifa Masajeador</title>
 
-    <!-- Refresca automáticamente cada 20 segundos -->
-    <meta http-equiv="refresh" content="20">
+  <style>
+    body {
+      margin: 0;
+      background: #002b36;
+      font-family: Arial, sans-serif;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            overflow: hidden;
-            background: #000;
-        }
-        iframe {
-            width: 100vw;
-            height: 100vh;
-            border: none;
-        }
-    </style>
+    h1 {
+      margin: 15px;
+      font-size: 22px;
+    }
+
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 6px;
+      width: 90%;
+      max-width: 500px;
+    }
+
+    .num {
+      background: #2aa198;
+      padding: 12px 0;
+      text-align: center;
+      border-radius: 6px;
+      font-size: 18px;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .vendido {
+      background: #dc322f !important;
+      color: white;
+    }
+  </style>
 </head>
+
 <body>
+  <h1>Rifa Masajeador : TABLERO</h1>
 
-    <!-- Iframe apuntando al link corto -->
-    <iframe src="https://docs.google.com/spreadsheets/d/17e5fJo3hPwSFC8bfra3-W5s4ffaoX5o2v1jJDGlNhB0/export?format=html&gid=1387081185&widget=true&headers=false"></iframe>
+  <div id="grid"></div>
 
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbzIkHtukbtnHov3AyyPTqBf6piEoN3lQQ34QmtXphKHkkMtEFOvwcZbTPCf6BbP7RxB/exec";
 
+    // Crear grilla 1–100
+    const grid = document.getElementById("grid");
+    for (let i = 1; i <= 100; i++) {
+      const cell = document.createElement("div");
+      cell.className = "num";
+      cell.id = "n" + i;
+      cell.textContent = i;
+      grid.appendChild(cell);
+    }
+
+    // Función para actualizar tablero
+    async function actualizar() {
+      try {
+        const resp = await fetch(API_URL + "?t=" + Date.now()); // evita caché
+        const vendidos = await resp.json(); // [{numero: 45, nombre: "Marina"}, ...]
+
+        // Resetear todos a disponible
+        for (let i = 1; i <= 100; i++) {
+          document.getElementById("n" + i).classList.remove("vendido");
+        }
+
+        // Pintar en rojo los números vendidos
+        vendidos.forEach(item => {
+          const n = document.getElementById("n" + item.numero);
+          if (n) n.classList.add("vendido");
+        });
+
+      } catch (e) {
+        console.error("Error consultando API:", e);
+      }
+    }
+
+    // Actualizar cada 2 segundos
+    actualizar();
+    setInterval(actualizar, 2000);
+  </script>
 </body>
 </html>
