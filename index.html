@@ -60,17 +60,17 @@
 
     #grid {
       display: grid;
-      grid-template-columns: repeat(10, 1fr);
-      gap: 6px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
       width: 90%;
-      max-width: 500px;
+      max-width: 360px;
     }
 
     .num {
       background: #2aa198;
-      padding: 12px 0;
+      padding: 14px 0;
       text-align: center;
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 18px;
       font-weight: bold;
       transition: background 0.3s;
@@ -103,11 +103,12 @@
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbzIkHtukbtnHov3AyyPTqBf6piEoN3lQQ34QmtXphKHkkMtEFOvwcZbTPCf6BbP7RxB/exec";
+    const TOTAL_NUMEROS = 50;
 
     const grid = document.getElementById("grid");
 
-    // Construir la grilla 1–100
-    for (let i = 1; i <= 100; i++) {
+    // Construir la grilla 1–50
+    for (let i = 1; i <= TOTAL_NUMEROS; i++) {
       const cell = document.createElement("div");
       cell.className = "num";
       cell.id = "n" + i;
@@ -122,11 +123,12 @@
         const vendidos = await resp.json();
 
         // Reset a verde todos
-        for (let i = 1; i <= 100; i++) {
-          document.getElementById("n" + i).classList.remove("vendido");
+        for (let i = 1; i <= TOTAL_NUMEROS; i++) {
+          const el = document.getElementById("n" + i);
+          if (el) el.classList.remove("vendido");
         }
 
-        // Pintar rojos
+        // Pintar vendidos
         vendidos.forEach(item => {
           const n = document.getElementById("n" + item.numero);
           if (n) n.classList.add("vendido");
@@ -137,7 +139,6 @@
       }
     }
 
-    // Actualización cada 2s
     actualizar();
     setInterval(actualizar, 2000);
   </script>
